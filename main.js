@@ -5,9 +5,10 @@ let tasklist = [];
 //add a condition for while loop
 let repeate = true;
 console.log(`-----------TO DO LIST-------\n\n`);
-//now ask question from user through inquirer
+//-------------------------------------------------------------------------------------------------------------
 // while loop
 while (repeate) {
+    //now ask question from user through inquirer
     let option = await inquirer.prompt({
         name: "list",
         type: "list",
@@ -27,24 +28,25 @@ while (repeate) {
             type: "input",
             message: "what would you like to add in todo list "
         });
+        console.log(`\n\n${answer.add}        task has been added \n\n`);
         tasklist.push(answer.add);
     }
     else if (option.list == "deletetask") {
-        let ans = await inquirer.prompt({
-            name: "confirm",
-            type: "confirm",
-            message: "do you really delete the task",
-            default: false
-        });
-        if (ans.confirm === true && tasklist.length !== 0) {
-            let delt = tasklist.pop();
-            console.log(`\n${delt}       task has been deleted\n`);
-        }
-        else if (ans.confirm === true && tasklist.length == 0) {
+        if (tasklist.length === 0) {
             console.log(`\t\t\tyou don't have any task\n`);
         }
-        else if (tasklist.length == 0) {
-            console.log(`\n\t\t\tyou don't have any task in list\n`);
+        else {
+            let ans = await inquirer.prompt({
+                name: "remove",
+                type: "list",
+                message: "select task to delete ",
+                choices: tasklist
+            });
+            let removetask = tasklist.indexOf(ans.remove);
+            if (removetask >= 0) {
+                tasklist.splice(removetask, 1);
+            }
+            console.log(`\n\n${ans.remove}          task has been deleted \n\n`);
         }
     }
     else if (option.list === "updatetask") {
@@ -52,15 +54,25 @@ while (repeate) {
             console.log(`\n\t\t\tyou don't have any task in list\n`);
         }
         else {
-            let ask = await inquirer.prompt({
-                name: "asks",
-                type: "input",
-                message: "write something for update last task",
-            });
-            let replace = tasklist.pop();
-            tasklist.push(ask.asks);
-            console.log(replace + `  this task has been updated into:
-                      ` + ask.asks);
+            let update = await inquirer.prompt([
+                {
+                    name: "upd",
+                    type: "list",
+                    message: "select task to update/rename",
+                    choices: tasklist
+                },
+                {
+                    name: "newtask",
+                    type: "input",
+                    message: "write what you update in selected task"
+                }
+            ]);
+            let updated = tasklist.indexOf(update.upd);
+            let newUpdate = update.newtask;
+            if (updated >= 0) {
+                tasklist.splice(updated, 1, newUpdate);
+            }
+            console.log(`\n\n${update.upd}   ( has been updated  into )     ${update.newtask} \n\n`);
         }
     }
     else if (option.list === "deleteAll") {
