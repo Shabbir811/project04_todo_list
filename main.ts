@@ -2,138 +2,137 @@
 
 import inquirer from "inquirer";
 
-// first we need a array
-let tasklist = []
-
-//add a condition for while loop
-let repeate = true
-
-console.log(`-----------TO DO LIST-------\n\n`);
-
-
-
-
-//-------------------------------------------------------------------------------------------------------------
-
-// while loop
-while(repeate){
-
-//now ask question from user through inquirer
-                 let option = await inquirer.prompt(
-                 {
-                   name: "list",
-                   type: "list",
-                   message: "select:",
-                   choices: ["addtask","readtask","deletetask","updatetask", "deleteAll","exit"]
-                  },
-                )
- 
-if(option.list == "readtask"){
-
-                    console.log(`\n\t\t\tYOUR TODO TASKLIST\n\n`);
-           
-                    tasklist.map(task => console.log(`\t\t\t\t${task}\n`))
-
-             if(tasklist.length == 0){
-                    console.log(`\n\t\t\tyou don't have any task in list\n`);
-                    }
-                
-        }
-else if(option.list == "addtask"){
-
-                    let answer = await inquirer.prompt(
-                    {
-                      name: "add",
-                      type: "input",
-                      message: "what would you like to add in todo list "
-                   }
-                )
-
-                     console.log(`\n\n${answer.add}        task has been added \n\n`);
-               
-
-                                        tasklist.push(answer.add)
-
-        }
-else if(option.list == "deletetask"){
-
-             if(tasklist.length === 0){
-                       console.log(`\t\t\tyou don't have any task\n`);
-               }
-             else{
-                     let ans = await inquirer.prompt(
-        
-                        {
-                            name: "remove",
-                            type: "list",
-                            message: "select task to delete ",
-                            choices: tasklist
-                        },
-                       )
+//create a class for  todo app
+class Todo {
+    todo_list:string[];  // an array which contain our tasks 
     
-                         let removetask =  tasklist.indexOf(ans.remove)
-    
-                            if(removetask >= 0){
-                                  tasklist.splice(removetask,1)
-                              }
-            
-                                  console.log(`\n\n${ans.remove}          task has been deleted \n\n`);
-        
-                }
-           
-      }
-else if(option.list === "updatetask"){
- 
-            if(tasklist.length == 0){
-                console.log(`\n\t\t\tyou don't have any task in list\n`);
-            }else{
-
-                let update = await inquirer.prompt([
-                    {
-                        name: "upd",
-                        type: "list",
-                        message:"select task to update/rename",
-                        choices: tasklist
-    
-                    },
-                    {
-                     name: "newtask",
-                     type: "input",
-                     message: "write what you update in selected task"   
-                    }
-                ])
-
-                    let updated = tasklist.indexOf(update.upd)
-                    let newUpdate = update.newtask
-    
-                    if(updated >= 0){
-                        tasklist.splice(updated,1,newUpdate)
-                    }
-                    console.log(`\n\n${update.upd}   ( has been updated  into )     ${update.newtask} \n\n`);
-                }
-                      
+        constructor(){
+            this.todo_list = []
+            }
+//this  method  show  our all tasks . we using  for each method to display this array elements 
+    show_todo_list(){
+            console.log(`\n\t## tode task list ##\n`);
+            this.todo_list.forEach(item =>{console.log(`\n\t * ${item}\n`);
+            })
     }
-else if(option.list === "deleteAll"){
-
-            if(tasklist.length == 0){
-                console.log(`\n\t\t\tyou don't have any task in list\n`);}
-
-                             while(tasklist.length > 0){
-                                       let delall= tasklist.pop()
-
-                                       console.log(delall+` has been deleted`);
-                
-                                    }
+//this  method  add a  task in todo list  using push method . 
+    add_to_list(input:string){
+        this.todo_list.push(input)
+        console.log(`\n\t#task: ${input}\n`);
+        console.log(`\n\t\t]-task has been added successfully...[\n`);
+        
     }
-else if(option.list === "exit"){
-         repeate = false
-   }
+//this  method  remove   our choosen  task . here we use splice method
+    remove_from_list(task:string){
         
+            this.todo_list.splice(this.todo_list.indexOf(task),1)
+        console.log(`\n\t##${task}##  it has been removed from task list\n`);  
+    }
+//this  method  update or rename tasks . here we also use splice method
+    update_task(new_input:string,previous_task:string){
         
+            this.todo_list.splice(this.todo_list.indexOf(previous_task),1,new_input)
+        console.log(`\n\tyour previous task has been updated with **${new_input}**\n`);
+    }
+//this  method  delete  all tasks in todo list . we using  while loop ,  until array length is not = 0  this while loop, pop task
+    delete_all(){
+            while(this.todo_list.length>0){
+              let remove =  this.todo_list.pop()
+              console.log(`=> ${remove}... deleted`);
+              
+            }
+        console.log(`\n\tyour all task have deleted...\n`);    
+    }
+// method  exiting message
+    end_program(){
         
+
+        setTimeout(() => {
+            console.log(`\n\tplease wait...`)
+            console.log(`exit`)
+        }, 2000)
+       
         
+    }
+}
+
+
+// get input from user accordingly this array
+let option:string[] = ["add","remove","update","veiw", "delete_all","exit"]
+
+// asker function ask questions and choice and return user's input 
+async function asker(name:string,type:"input"|"number"|"list",message:string,choices?:string[]){
+    let ask = await inquirer.prompt(
+        {
+            name: name,
+            type: type,
+            message: message,
+            choices: choices
+        }
+    )
+        let answer:string = ask[name]
+    return answer
+}
+
+
+ 
+
+
+
+
+// create an  object  with todo class 
+let todo = new Todo()
+// while 
+while(true){
+    //call asker function
+    let ask = await asker("option","list","what would you like to do?",option)
+    
+    if(ask == "add"){
+        let ask_add = await asker("add","input","what would you like to add in todo list")
+        todo.add_to_list(ask_add)
+    
+    }else if(ask == "remove"){
+        if(todo.todo_list.length == 0){
+            console.log(`\n\tyou have nothing to remove in your todo list\n`);
+        }else{
+            let ask_remove = await asker("remove","list","what would you like to remove from todo list",todo.todo_list)
+        todo.remove_from_list(ask_remove)
+        }
+         
+    
+    }else if(ask == "update"){
+        if(todo.todo_list.length !== 0){
+            let ask_pre = await asker("pre","list","what would you like to remove from todo list",todo.todo_list)
+            let ask_new_input = await asker("new_input","input","what would you like to remove from todo list")
+            todo.update_task(ask_new_input,ask_pre)
+        }else{
+            console.log(`\n\tyou have nothing to update in your todo list\n`);
+        }
         
- }
+    
+    }else if(ask == "veiw"){
+        if(todo.todo_list.length == 0){
+            console.log(`\n\tyour todo list is empty\n`);
+        }else{
+            todo.show_todo_list() 
+          }
+       
+        
+    }else if(ask == "delete_all"){
+        if(todo.todo_list.length == 0 ){
+            console.log(`\n\tyour todo list is already empty\n`);
+        }else{
+            todo.delete_all() 
+        }
+        
+    }else if(ask == "exit"){
+       todo.end_program()
+
+       break;
+        
+    }
+}
+
 
             
 
