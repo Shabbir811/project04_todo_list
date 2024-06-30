@@ -103,7 +103,7 @@ while(true){
     }else if(ask == "update"){
         if(todo.todo_list.length !== 0){
             let ask_pre = await asker("pre","list","what would you like to remove from todo list",todo.todo_list)
-            let ask_new_input = await asker("new_input","input","what would you like to remove from todo list")
+            let ask_new_input = await asker("new_input","input","what would you like to add new to todo list")
             todo.update_task(ask_new_input,ask_pre)
         }else{
             console.log(`\n\tyou have nothing to update in your todo list\n`);
